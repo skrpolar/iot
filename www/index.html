@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/bootstrap.css">
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+    <div class="container" onclick="panelClick(event);">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-success">
+                <div class="panel panel-heading">物联网工程设计与实现</div>
+                <div class="panel-body">
+                    <div class="row" id="ledRow">
+                        <div class="col-xs-2" id="title1">led灯01</div>
+                        <div class="col-xs-2" id="title2">led灯02</div>
+                        <div class="col-xs-2" id="title3">led灯03</div>
+                    </div>
+                    <div class="row" id="imgRow">
+                        <div class="col-xs-2" id="ledd1"><img src="default.jpg"  id="led1"></div>
+                        <div class="col-xs-2" id="ledd2"><img src="default.jpg"  id="led2"></div>
+                        <div class="col-xs-2" id="ledd3"><img src="default.jpg"  id="led3"></div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row" id="btnRow">
+                        <div class="col-xs-2" id="sendBtnd1">
+                            <button class="btn btn-default" type="button" id="sendLedBtn1"></button>
+                            <input  class="btn btn-danger" type="button" name="" value="删除" id="deleteBtn1">
+                        </div>
+                        <div class="col-xs-2" id="sendBtnd2">
+                            <button class="btn btn-default" type="button" id="sendLedBtn2"></button>
+                            <input  class="btn btn-danger" type="button" name="" value="删除" id="deleteBtn2">
+                        </div>
+                        <div class="col-xs-2" id="sendBtnd3">
+                            <button class="btn btn-default" type="button" id="sendLedBtn3"></button>
+                            <input  class="btn btn-danger" type="button" name="" value="删除" id="deleteBtn3">
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-xs-2 col-xs-push-8">
+                            <button class="btn btn-primary" id="add">增加</button>
+                        </div>
+                        <div class="col-xs-2 col-xs-push-8">
+                            <button class="btn btn-danger" id="delete">全部删除</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="index.js"></script>
+    </body>
+</html>
