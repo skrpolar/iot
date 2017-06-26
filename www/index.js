@@ -3,6 +3,9 @@ var searchLedNum = 0;
 var sensorValue = 0;
 
 window.onload = function(){
+
+    
+
     socket.on('connect',function(){
         console.log("Connect Success");
         socket.emit('searchLedNum');
@@ -122,43 +125,67 @@ function panelClick(evt){
             let select1 = document.createElement("option");
             select1.innerText = "led";
             let select2 = document.createElement("option");
-            // select2.innerText = "温湿度";
+            select2.innerText = "sensor";
             let select3 = document.createElement("option");
             // select3.innerText = "光敏";
 
             select.appendChild(selectSpace);
             select.appendChild(select1);
-            // select.appendChild(select2);
+            select.appendChild(select2);
             // select.appendChild(select3);
 
             select.onchange = () => {
 
-                if(select.options[select.selectedIndex].innerText == "光敏"){
-                    while(selectNum.getElementsByTagName("option").length !== 0){
-                        selectNum.removeChild(selectNum.getElementsByTagName("option")[0]);
-                    }
-                    let serOption = document.createElement("option");
-                    serOption.innerText = "2";
-                    selectNum.appendChild(serOption);
-                }
-
-                if(select.options[select.selectedIndex].innerText == "温湿度"){
-                    while(selectNum.getElementsByTagName("option").length !== 0){
-                        selectNum.removeChild(selectNum.getElementsByTagName("option")[0]);
-                    }
-                    let serOption = document.createElement("option");
-                    serOption.innerText = "1";
-                    selectNum.appendChild(serOption);
-                }
+                // if(select.options[select.selectedIndex].innerText == "温湿度"){
+                //     while(selectNum.getElementsByTagName("option").length !== 0){
+                //         selectNum.removeChild(selectNum.getElementsByTagName("option")[0]);
+                //     }
+                //     let serOption1 = document.createElement("option");
+                //     serOption.innerText = "3";
+                //     selectNum.appendChild(serOption1);
+                //     let serOption2 = document.createElement("option");
+                //     serOption.innerText = "6";
+                //     selectNum.appendChild(serOption2);
+                //     let serOption3 = document.createElement("option");
+                //     serOption.innerText = "9";
+                //     selectNum.appendChild(serOption3);
+                //     let serOption4 = document.createElement("option");
+                //     serOption.innerText = "12";
+                //     selectNum.appendChild(serOption4);
+                // }
 
                 if(select.options[select.selectedIndex].innerText == "type"){
                     while(selectNum.getElementsByTagName("option").length !== 0){
                         selectNum.removeChild(selectNum.getElementsByTagName("option")[0]);
                     }
-                }else if(select.options[select.selectedIndex].innerText == "led"){
+                } 
+
+                if(select.options[select.selectedIndex].innerText == "sensor"){
+                    while(selectNum.getElementsByTagName("option").length !== 0){
+                        selectNum.removeChild(selectNum.getElementsByTagName("option")[0]);
+                    }
+                    let serOption1 = document.createElement("option");
+                    serOption1.innerText = "1";
+                    selectNum.appendChild(serOption1);
+                    let serOption2 = document.createElement("option");
+                    serOption2.innerText = "2";
+                    selectNum.appendChild(serOption2);
+                    let serOption3 = document.createElement("option");
+                    serOption3.innerText = "3";
+                    selectNum.appendChild(serOption3);
+                    let serOption4 = document.createElement("option");
+                    serOption4.innerText = "4";
+                    selectNum.appendChild(serOption4);
+                }
+                
+                
+                
+                if(select.options[select.selectedIndex].innerText == "led"){
+                    
                     socket.emit('searchLedNum');
                     enterBtn.disabled = true;
                     cancelBtn.disabled = true;
+                    
                     setTimeout(() => {
                         if(selectNum.getElementsByTagName("option").length !== 0){
                         while(selectNum.getElementsByTagName("option").length !== 0){
@@ -171,7 +198,7 @@ function panelClick(evt){
                             
                             for(let j = 0; j < img.getElementsByTagName("div").length; j ++){
                                 if((img.getElementsByTagName("div")[j].id).substr(0,(img.getElementsByTagName("div")[j].id).length - 1) == "ledd"){
-                                    if(searchLedNum[i].id == (img.getElementsByTagName("div")[j].id).substr((img.getElementsByTagName("div")[j].id).length - 1)){
+                                    if(searchLedNum[i].number == (img.getElementsByTagName("div")[j].id).substr((img.getElementsByTagName("div")[j].id).length - 1)){
                                         p = 1;
                                     }
                                 }
@@ -180,7 +207,7 @@ function panelClick(evt){
                                 LedNum ++;
                                 console.log(LedNum);
                                 let serOption = document.createElement("option");
-                                serOption.innerText = searchLedNum[i].id;
+                                serOption.innerText = searchLedNum[i].number;
                                 selectNum.appendChild(serOption);
                             }else{
                                 // console.log("已经存在：" + searchLedNum[i].id);
@@ -201,7 +228,7 @@ function panelClick(evt){
                             let p = 0;
                             for(let j = 0; j < img.getElementsByTagName("div").length; j ++){
                                 if((img.getElementsByTagName("div")[j].id).substr(0,(img.getElementsByTagName("div")[j].id).length - 1) == "ledd"){
-                                    if(searchLedNum[i].id == (img.getElementsByTagName("div")[j].id).substr((img.getElementsByTagName("div")[j].id).length - 1)){
+                                    if(searchLedNum[i].number == (img.getElementsByTagName("div")[j].id).substr((img.getElementsByTagName("div")[j].id).length - 1)){
                                         p = 1;
                                     }
                                 }
@@ -209,7 +236,7 @@ function panelClick(evt){
                             if(p == 0){
                                 LedNum ++;
                                 let serOption = document.createElement("option");
-                                serOption.innerText = searchLedNum[i].id;
+                                serOption.innerText = searchLedNum[i].number;
                                 selectNum.appendChild(serOption);
                             }else{
                                 // console.log("已经存在：" + searchLedNum[i].id);
@@ -259,6 +286,7 @@ function panelClick(evt){
                                     // img.removeChild(addImg);
                                     // btn.removeChild(addBtn);
                                     let newTitle = document.createElement("div");
+                                    let newTitleSpan = document.createElement("span");
                                     let newBtnRow = document.createElement("div");
                                     let newImg = document.createElement("img");
                                     let newImgDiv = document.createElement("div");
@@ -278,6 +306,7 @@ function panelClick(evt){
 
                                     }
                                     newImg.id = "led" + searchLedNum[i].number;
+                                    newImg.style.borderRadius = "8px";
                                     newImgDiv.className = "col-xs-2";
                                     newImgDiv.id = "ledd" + searchLedNum[i].number;
                                     newImgDiv.appendChild(newImg);
@@ -297,7 +326,9 @@ function panelClick(evt){
                                     newBtnRow.appendChild(newDelBtn);
 
                                     newTitle.id = "title" + searchLedNum[i].number;
-                                    newTitle.innerText = "led灯0" + searchLedNum[i].number;
+                                    newTitleSpan.className = "label label-info";
+                                    newTitleSpan.innerText = "led灯0" + searchLedNum[i].number;
+                                    newTitle.appendChild(newTitleSpan);
                                     title.appendChild(newTitle);
                                     img.appendChild(newImgDiv);
                                     btn.appendChild(newBtnRow);
@@ -309,72 +340,100 @@ function panelClick(evt){
                             },500);
                             // title.removeChild(addE);
                         })();break;
-                        case "温湿度" : (() => {
+                        case "sensor" : ((sensorNum) => {
                             enterBtn.disabled = true;
-                            socket.emit('searchLedNum',1,"sensor");
-                            setTimeout(() => {
+                            // socket.emit('searchLedNum',1,"sensor");
+                            // setTimeout(() => {
+
                                 title.removeChild(addE);
                                 let newTitle = document.createElement("div");
+                                let newTitleSpan = document.createElement("span");
                                 let newBtnRow = document.createElement("div");
-                                let newImg = document.createElement("div");
+                                // let newImg = document.createElement("div");
                                 let newImgDiv = document.createElement("div");
                                 let newDelBtn = document.createElement("input");
+
+                                let temValue = document.createElement("div");
+                                let temSpan = document.createElement("span");
+                                // temValue.innerText = ;
+                                temValue.className = "alert alert-success";
+                                // temValue.setAttribute("role","alert");
+                                temSpan.className = "label label-success";
+                                temSpan.innerText = "温度：" + "1" + "℃";
+                                temValue.insertBefore(temSpan,temValue.firstChild);
+
+                                let humValue = document.createElement("div");
+                                let humSpan = document.createElement("div");
+                                // humValue.innerText = ;
+                                humValue.className = "alert alert-info";
+                                humSpan.className = "label label-info";
+                                humSpan.innerText = "湿度：" + "2" + "%";
+                                humValue.insertBefore(humSpan,humValue.firstChild);
+
+                                let lightValue = document.createElement("div");
+                                let lightSpan = document.createElement("div");
+                                lightValue.className = "alert alert-warning";
+                                // lightValue.innerText = "3";
+                                lightSpan.className = "label label-warning";
+                                lightSpan.innerText = "光敏：" + "3";
+                                lightValue.insertBefore(lightSpan,lightValue.firstChild);
+
                                 newImgDiv.className = "col-xs-2";
-                                newImgDiv.id = "tem";
-                                newImgDiv.appendChild(newImg);
+                                newImgDiv.id = "sensor" + sensorNum;
+
+                                newImgDiv.appendChild(temValue);
+                                newImgDiv.appendChild(humValue);
+                                newImgDiv.appendChild(lightValue);
 
                                 newTitle.className = "col-xs-2";
 
                                 newDelBtn.type = "button";
                                 newDelBtn.className = "btn btn-danger"
                                 newDelBtn.value = "删除";
-                                newDelBtn.id = "deleteBtnTem";
+                                newDelBtn.id = "deleteBtnSensor" + sensorNum;
                                 newBtnRow.className = "col-xs-2";
-                                newBtnRow.id = "sendBtndTem";
+                                newBtnRow.id = "sendBtndSensor" + sensorNum;
                                 newBtnRow.appendChild(document.createTextNode(" "));
                                 newBtnRow.appendChild(newDelBtn);
 
-                                newTitle.id = "titleTem";
-                                newTitle.innerText = "温湿度";
+                                newTitle.id = "titleSensor" + sensorNum;
+                                newTitleSpan.className = "label label-info";
+                                newTitleSpan.innerText = "传感器0" + sensorNum;
+                                newTitle.appendChild(newTitleSpan);
+                                // newTitle.innerText = "传感器" + sensorNum;
                                 title.appendChild(newTitle);
                                 img.appendChild(newImgDiv);
                                 btn.appendChild(newBtnRow);
+
+                                setInterval(() => {
+                                    var xhr = new XMLHttpRequest();
+                                    xhr.open("GET","/sensor?sensorNum=" + sensorNum,true);
+                                    xhr.onreadystatechange = () => {
+                                        if(xhr.readyState == 4) {
+                                            if(xhr.status == 200) {
+                                                // alert(xhr.responseText);
+                                                let jsonArr = JSON.parse(xhr.responseText);
+                                                for(let i in jsonArr){
+                                                    // console.log(i);
+                                                    if(jsonArr[i].number == "1" || jsonArr[i].number == "4" || jsonArr[i].number == "7" || jsonArr[i].number == "10"){
+                                                        temSpan.innerText = "温度：" + jsonArr[i].value + "℃";
+                                                    }else if(jsonArr[i].number == "2" || jsonArr[i].number == "5" || jsonArr[i].number == "8" || jsonArr[i].number == "11"){
+                                                        humSpan.innerText = "湿度：" + jsonArr[i].value + "%";
+                                                    }else if(jsonArr[i].number == "3" || jsonArr[i].number == "6" || jsonArr[i].number == "9" || jsonArr[i].number == "12"){
+                                                        lightSpan.innerText = "光敏：" + jsonArr[i].value;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    xhr.send(null);
+                                },500);
+
                                 obj.disabled = false;
-                            },200);
-                        })();break;
-                        case "光敏" : (() => {
-                            enterBtn.disabled = true;
-                            socket.emit('searchLedNum',2,"sensor");
-                            setTimeout(() => {
-                                title.removeChild(addE);
-                                let newTitle = document.createElement("div");
-                                let newBtnRow = document.createElement("div");
-                                let newImg = document.createElement("div");
-                                let newImgDiv = document.createElement("div");
-                                let newDelBtn = document.createElement("input");
-                                newImgDiv.className = "col-xs-2";
-                                newImgDiv.id = "light";
-                                newImgDiv.appendChild(newImg);
 
-                                newTitle.className = "col-xs-2";
+                            // },200);
+                        })(selectNum.options[selectNum.selectedIndex].value);break;
 
-                                newDelBtn.type = "button";
-                                newDelBtn.className = "btn btn-danger"
-                                newDelBtn.value = "删除";
-                                newDelBtn.id = "deleteBtnLight";
-                                newBtnRow.className = "col-xs-2";
-                                newBtnRow.id = "sendBtndLight";
-                                newBtnRow.appendChild(document.createTextNode(" "));
-                                newBtnRow.appendChild(newDelBtn);
-
-                                newTitle.id = "titleLight";
-                                newTitle.innerText = "光敏";
-                                title.appendChild(newTitle);
-                                img.appendChild(newImgDiv);
-                                btn.appendChild(newBtnRow);
-                                obj.disabled = false;
-                            },200);
-                        })();break;
                     }
 
                 }else{
@@ -413,17 +472,15 @@ function panelClick(evt){
         let deleteImg = document.getElementById("imgRow");
         let deleteBtn = document.getElementById("btnRow");
 
-        if(obj.id == "deleteBtnTem"){
-            var deleteTitleC = document.getElementById("titleTem");
-            var deleteImgC = document.getElementById("tem");
-            var deleteBtnC = document.getElementById("sendBtndTem");
-            
-        }else if(obj.id == "deleteBtnLight"){
-            var deleteTitleC = document.getElementById("titleLight");
-            var deleteImgC = document.getElementById("light");
-            var deleteBtnC = document.getElementById("sendBtndLight");
+        if((obj.id).substr(0,(obj.id).length - 1) == "deleteBtnSensor"){
+
+            var deleteId = (obj.id).substr((obj.id).length - 1);
+            var deleteTitleC = document.getElementById("titleSensor" + deleteId);
+            var deleteImgC = document.getElementById("sensor" + deleteId);
+            var deleteBtnC = document.getElementById("sendBtndSensor" + deleteId);
             
         }else {
+
             var deleteId = (obj.id).substr((obj.id).length - 1);
             var deleteTitleC = document.getElementById("title" + deleteId);
             var deleteImgC = document.getElementById("ledd" + deleteId);
