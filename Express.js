@@ -60,11 +60,15 @@ var gclient;
 
 
 chatServer.on('connection', (client) => {  
+
     gclient = client;
     gclient.setDefaultEncoding("hex");
-});  
   
+});  
+
+
 chatServer.listen(9000);  
+
 
 //---------------------------------------------------------------------------------
 //mysql连接

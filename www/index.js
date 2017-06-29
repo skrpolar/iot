@@ -2,9 +2,87 @@ var socket = io.connect('/');//与服务器进行连接
 var searchLedNum = 0;
 var sensorValue = 0;
 
-window.onload = function(){
+var config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: "温度Tem/℃",
+                    backgroundColor: window.chartColors.green,
+                    borderColor: window.chartColors.green,
+                    data: [],
+                    fill: false,
+                }, {
+                    label: "湿度Hum/%",
+                    fill: false,
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: [
+                        // randomScalingFactor(),
+                        ],
+                },{
+                    label: "光敏Light",
+                    fill: false,
+                    backgroundColor: window.chartColors.yellow,
+                    borderColor: window.chartColors.yellow,
+                    data: [],
+                }]
+            },
+            options: {
+                responsive: true,
+                title:{
+                    display:true,
+                    // text:'终端01'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: '时间Time'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: '数值Value'
+                        }
+                    }]
+                }
+            }
+        };
 
-    
+
+
+var ctx = document.getElementById("myChart").getContext("2d");
+var myNewChart = new Chart(ctx,config);
+
+$('#myModal').on('hide.bs.modal', function () {
+    config.data.labels.splice(0,config.data.labels.length);
+    config.data.datasets[0].data.splice(0,config.data.datasets[0].data.length);
+    config.data.datasets[1].data.splice(0,config.data.datasets[1].data.length);
+    config.data.datasets[2].data.splice(0,config.data.datasets[2].data.length);
+})
+
+// setInterval(() => {
+//     config.data.labels.push("asd");
+//     config.data.datasets[0].data.push(randomScalingFactor());
+//     window.myNewChart.update();
+// },1000);
+
+// console.log(config.data.datasets[0].data);
+
+
+window.onload = function(){
 
     socket.on('connect',function(){
         console.log("Connect Success");
@@ -74,8 +152,57 @@ function panelClick(evt){
     var obj = window.event ? event.srcElement : evt.target;
     if(obj.nodeName == "BUTTON"){
         if(obj.id !== "add" && obj.id !== "delete"){
-            console.log("Click led" + obj.id.substr(obj.id.length - 1) + "按钮");
-            socket.send(obj.id.substr(obj.id.length - 1));
+            if(obj.id.substr(0,obj.id.length - 1) == "sensorModalBtn") {
+                
+                if(window["time"] == undefined){
+                    // console.log("clearInterval");
+                }else{
+                    window.clearInterval(window["time"]);
+                }
+
+                let modalLabel = document.getElementById("myModalLabel");
+                modalLabel.innerText = "终端0" + obj.id.substr(obj.id.length - 1);
+
+                config.data.labels.splice(0,config.data.labels.length);
+                config.data.datasets[0].data.splice(0,config.data.datasets[0].data.length);
+                config.data.datasets[1].data.splice(0,config.data.datasets[1].data.length);
+                config.data.datasets[2].data.splice(0,config.data.datasets[2].data.length);
+
+                window["time"] = setInterval(() => {
+                    var xhr = new XMLHttpRequest();
+                    // console.log(obj.id.substr(obj.id.length - 1));
+                    xhr.open("GET","/sensor?sensorNum=" + obj.id.substr(obj.id.length - 1),true);
+                    xhr.onreadystatechange = () => {
+                        if(xhr.readyState == 4) {
+                            if(xhr.status == 200) {
+                                // alert(xhr.responseText);
+                                let jsonArr = JSON.parse(xhr.responseText);
+                                for(let i in jsonArr){
+                                    // console.log(i);
+                                    if(jsonArr[i].number == "1" || jsonArr[i].number == "4" || jsonArr[i].number == "7" || jsonArr[i].number == "10"){
+                                        // temSpan.innerText = "温度：" + jsonArr[i].value + "℃";
+                                        config.data.labels.push((jsonArr[i].time).substr(11,8));
+                                        config.data.datasets[0].data.push(jsonArr[i].value);
+                                        window.myNewChart.update();
+                                    }else if(jsonArr[i].number == "2" || jsonArr[i].number == "5" || jsonArr[i].number == "8" || jsonArr[i].number == "11"){
+                                        // humSpan.innerText = "湿度：" + jsonArr[i].value + "%";
+                                        config.data.datasets[1].data.push(jsonArr[i].value);
+                                        window.myNewChart.update();
+                                    }else if(jsonArr[i].number == "3" || jsonArr[i].number == "6" || jsonArr[i].number == "9" || jsonArr[i].number == "12"){
+                                        // lightSpan.innerText = "光敏：" + jsonArr[i].value;
+                                        config.data.datasets[2].data.push(jsonArr[i].value);
+                                        window.myNewChart.update();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    xhr.send(null);
+                },2000);
+            }else {
+                console.log("Click led" + obj.id.substr(obj.id.length - 1) + "按钮");
+                socket.send(obj.id.substr(obj.id.length - 1));
+            }
         }else if(obj.id == "delete"){
 
             let deleteTitle = document.getElementById("ledRow");
@@ -359,7 +486,7 @@ function panelClick(evt){
                                 temValue.className = "alert alert-success";
                                 // temValue.setAttribute("role","alert");
                                 temSpan.className = "label label-success";
-                                temSpan.innerText = "温度：" + "1" + "℃";
+                                temSpan.innerText = "温度：" + "℃";
                                 temValue.insertBefore(temSpan,temValue.firstChild);
 
                                 let humValue = document.createElement("div");
@@ -367,7 +494,7 @@ function panelClick(evt){
                                 // humValue.innerText = ;
                                 humValue.className = "alert alert-info";
                                 humSpan.className = "label label-info";
-                                humSpan.innerText = "湿度：" + "2" + "%";
+                                humSpan.innerText = "湿度：" + "%";
                                 humValue.insertBefore(humSpan,humValue.firstChild);
 
                                 let lightValue = document.createElement("div");
@@ -375,7 +502,7 @@ function panelClick(evt){
                                 lightValue.className = "alert alert-warning";
                                 // lightValue.innerText = "3";
                                 lightSpan.className = "label label-warning";
-                                lightSpan.innerText = "光敏：" + "3";
+                                lightSpan.innerText = "光敏：";
                                 lightValue.insertBefore(lightSpan,lightValue.firstChild);
 
                                 newImgDiv.className = "col-xs-2";
@@ -393,19 +520,44 @@ function panelClick(evt){
                                 newDelBtn.id = "deleteBtnSensor" + sensorNum;
                                 newBtnRow.className = "col-xs-2";
                                 newBtnRow.id = "sendBtndSensor" + sensorNum;
-                                newBtnRow.appendChild(document.createTextNode(" "));
-                                newBtnRow.appendChild(newDelBtn);
+                                
+
 
                                 newTitle.id = "titleSensor" + sensorNum;
                                 newTitleSpan.className = "label label-info";
-                                newTitleSpan.innerText = "传感器0" + sensorNum;
+                                newTitleSpan.innerText = "终端0" + sensorNum;
                                 newTitle.appendChild(newTitleSpan);
                                 // newTitle.innerText = "传感器" + sensorNum;
                                 title.appendChild(newTitle);
                                 img.appendChild(newImgDiv);
-                                btn.appendChild(newBtnRow);
+                                
 
-                                setInterval(() => {
+                                /* ----------------模态框按钮----------------- */
+                                let modalBtn = document.createElement("button");
+                                modalBtn.className = "btn btn-default";
+                                modalBtn.setAttribute("data-toggle","modal");
+                                modalBtn.setAttribute("data-target","#myModal");
+                                modalBtn.id = "sensorModalBtn" + sensorNum;
+                                modalBtn.innerText = "曲线图";
+
+                                newBtnRow.appendChild(modalBtn);
+                                newBtnRow.appendChild(document.createTextNode(" "));
+                                newBtnRow.appendChild(newDelBtn);
+                                btn.appendChild(newBtnRow);
+                                /* ----------------模态框按钮----------------- */
+
+                                // if(window["time"] == undefined){
+                                //     // console.log("clearInterval");
+                                // }else{
+                                //     window.clearInterval(window["time"]);
+                                // }
+
+                                // config.data.labels.splice(0,config.data.labels.length);
+                                // config.data.datasets[0].data.splice(0,config.data.datasets[0].data.length);
+                                // config.data.datasets[1].data.splice(0,config.data.datasets[1].data.length);
+                                // config.data.datasets[2].data.splice(0,config.data.datasets[2].data.length);
+
+                                window["time" + sensorNum] = setInterval(() => {
                                     var xhr = new XMLHttpRequest();
                                     xhr.open("GET","/sensor?sensorNum=" + sensorNum,true);
                                     xhr.onreadystatechange = () => {
@@ -417,17 +569,24 @@ function panelClick(evt){
                                                     // console.log(i);
                                                     if(jsonArr[i].number == "1" || jsonArr[i].number == "4" || jsonArr[i].number == "7" || jsonArr[i].number == "10"){
                                                         temSpan.innerText = "温度：" + jsonArr[i].value + "℃";
+                                                        // config.data.labels.push((jsonArr[i].time).substr(11,8));
+                                                        // config.data.datasets[0].data.push(jsonArr[i].value);
+                                                        // window.myNewChart.update();
                                                     }else if(jsonArr[i].number == "2" || jsonArr[i].number == "5" || jsonArr[i].number == "8" || jsonArr[i].number == "11"){
                                                         humSpan.innerText = "湿度：" + jsonArr[i].value + "%";
+                                                        // config.data.datasets[1].data.push(jsonArr[i].value);
+                                                        // window.myNewChart.update();
                                                     }else if(jsonArr[i].number == "3" || jsonArr[i].number == "6" || jsonArr[i].number == "9" || jsonArr[i].number == "12"){
                                                         lightSpan.innerText = "光敏：" + jsonArr[i].value;
+                                                        // config.data.datasets[2].data.push(jsonArr[i].value);
+                                                        // window.myNewChart.update();
                                                     }
                                                 }
                                             }
                                         }
                                     }
                                     xhr.send(null);
-                                },500);
+                                },2000);
 
                                 obj.disabled = false;
 
@@ -478,6 +637,7 @@ function panelClick(evt){
             var deleteTitleC = document.getElementById("titleSensor" + deleteId);
             var deleteImgC = document.getElementById("sensor" + deleteId);
             var deleteBtnC = document.getElementById("sendBtndSensor" + deleteId);
+            window.clearInterval(window["time" + deleteId]);
             
         }else {
 
