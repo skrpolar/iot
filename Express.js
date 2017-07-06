@@ -6,12 +6,8 @@ var express = require('express'),
 io = require('socket.io')(server); //引入socket.io模块并绑定到服务器
 app.use('/', express.static(__dirname + '/www'));
 
-app.get('/sensor',function(req,res){
-    
-    // console.log(req.query.sensorNum);
+app.get('/sensor',function(req,res) {
     iotsql.init(req.query.sensorNum,"addSensor",res);
-    // res.send(msg);
-
 });
 
 //socket部分
@@ -82,7 +78,7 @@ var iotsql = {
 
         var connection = mysql.createConnection({   
 
-            host     : '172.16.146.169',       
+            host     : 'localhost',       
             user     : 'root',              
             password : '123123',       
             port     : '3306',                   
